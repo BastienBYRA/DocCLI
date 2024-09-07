@@ -1,0 +1,7 @@
+[project]
+name = "doccli"
+version = "0.1.0"
+description = "DocCLI is a program that create a CLI to easily read a list of files in your terminal at any moment"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
