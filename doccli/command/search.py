@@ -1,6 +1,8 @@
 from pathlib import Path
+import re
+from typing import List
 
-def is_file_or_dir(search: Path) -> None:
+def is_file_or_dir(search: Path, exclude: List[str]) -> None:
     """
     Check whether the search input is a file or a directory.
 
@@ -20,14 +22,26 @@ def is_file_or_dir(search: Path) -> None:
 
     # Check if the path is a file or a dir
     if search.is_dir():
-        return print_tree_dir(search)
+        return print_tree_dir(search, exclude)
     else:
         return print_file_content(search)
 
 
-def print_tree_dir(search: Path) -> None:
+def print_tree_dir(search: Path, exclude: List[str]) -> None:
+
     for line in tree(search):
-        print(line)
+        # If there is a list of regex, check the line doesn't match any of the regex before printing it
+        # Code awful, but it will do the trick for now
+        display: bool = True
+        if len(exclude) > 0:
+            for reg in exclude:
+                if re.search(reg, line):
+                    display=False
+                    break
+            if display is True:
+                print(line)
+        else:
+            print(line)
     return None
 
 def print_file_content(search: Path) -> None:
