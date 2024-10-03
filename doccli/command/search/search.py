@@ -9,7 +9,7 @@ def is_file_or_dir(search: Path, exclude: List[str]) -> None:
     :param search: The file or directory searched by the user.
     :type search: Path
     :param exclude: The list of regex that search shouldn't match to be valid
-    :type search: List[str]
+    :type exclude: List[str]
     :return: None, print the result.
 
     :Example:
@@ -91,7 +91,7 @@ def is_search_excluded(search: Path, exclude: List[str]) -> bool:
     :param search: The file or directory searched by the user.
     :type search: Path
     :param exclude: The list of regex that search shouldn't match to be valid
-    :type search: List[str]
+    :type exclude: List[str]
     :return: A bool, True if the search is mean to be exclude, false otherwise.
 
     :Example:
