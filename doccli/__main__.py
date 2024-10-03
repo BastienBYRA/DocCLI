@@ -3,6 +3,7 @@ from typing import List
 from typing_extensions import Annotated
 import typer
 import command.search as com_search
+# from doccli.models.searched_path import Searched_Path
 
 app = typer.Typer()
 
@@ -15,7 +16,7 @@ def search(
            search_input: Annotated[
                str, typer.Argument(envvar="SEARCH_INPUT")],
            exclude: Annotated[
-               str, typer.Option(hidden=True, prompt="A list of regex to exclude files or directories in the form of 'regex1,regex2...'")] = "") -> None:
+               str, typer.Option(prompt_required=False ,hidden=True, prompt="A list of regex to exclude files or directories in the form of 'regex1,regex2...'")] = "") -> None:
 
     exclude_list: List[str] = exclude.split(",")
 
