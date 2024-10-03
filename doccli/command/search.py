@@ -8,6 +8,8 @@ def is_file_or_dir(search: Path, exclude: List[str]) -> None:
 
     :param search: The file or directory searched by the user.
     :type search: Path
+    :param exclude: The list of regex that search shouldn't match to be valid
+    :type search: List[str]
     :return: None, print the result.
 
     :Example:
@@ -24,27 +26,22 @@ def is_file_or_dir(search: Path, exclude: List[str]) -> None:
     if search.is_dir():
         return print_tree_dir(search, exclude)
     else:
-        return print_file_content(search)
+        return print_file_content(search, exclude)
 
 
 def print_tree_dir(search: Path, exclude: List[str]) -> None:
 
-    for line in tree(search):
-        # If there is a list of regex, check the line doesn't match any of the regex before printing it
-        # Code awful, but it will do the trick for now
-        display: bool = True
-        if len(exclude) > 0:
-            for reg in exclude:
-                if re.search(reg, line):
-                    display=False
-                    break
-            if display is True:
-                print(line)
-        else:
-            print(line)
+    for line in tree(search, prefix="", exclude=exclude):
+        print(line)
+
     return None
 
-def print_file_content(search: Path) -> None:
+
+def print_file_content(search: Path, exclude: List[str]) -> None:
+
+    if is_search_excluded(search, exclude) is True:
+        return None
+
     print("Content from : " + str(search))
     print("- * - * - * - * - * - * - * - * -")
     with search.open() as f:
@@ -54,25 +51,57 @@ def print_file_content(search: Path) -> None:
     return None
 
 
-# https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
-def tree(dir_path: Path, prefix: str=''):
+# Based on this code : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
+def tree(dir_path: Path, exclude: List[str], prefix: str=''):
+    """
+    A recursive generator, given a directory Path object
+    will yield a visual tree structure line by line
+    with each line prefixed by the same characters
+    """
+   
     # prefix components:
     space =  '    '
     branch = '│   '
     # pointers:
     tee =    '├── '
     last =   '└── '
-
-    """A recursive generator, given a directory Path object
-    will yield a visual tree structure line by line
-    with each line prefixed by the same characters
-    """    
+  
     contents = list(dir_path.iterdir())
     # contents each get pointers that are ├── with a final └── :
     pointers = [tee] * (len(contents) - 1) + [last]
     for pointer, path in zip(pointers, contents):
-        yield prefix + pointer + path.name
-        if path.is_dir(): # extend the prefix and recurse:
+
+        # Check if the file is to be exclude
+        filepath = Path(prefix + pointer + path.name)
+        if is_search_excluded(filepath, exclude) is False:
+            yield prefix + pointer + path.name
+
+        # Check if the directory is to be exclude
+        if path.is_dir() and is_search_excluded(path, exclude) is False: # extend the prefix and recurse:
             extension = branch if pointer == tee else space 
             # i.e. space because last, └── , above so no more |
-            yield from tree(path, prefix=prefix+extension)
+            yield from tree(path, prefix=prefix+extension, exclude=exclude)
+
+
+
+def is_search_excluded(search: Path, exclude: List[str]) -> bool:
+    """
+    Checks whether the search should be excluded or not
+
+    :param search: The file or directory searched by the user.
+    :type search: Path
+    :param exclude: The list of regex that search shouldn't match to be valid
+    :type search: List[str]
+    :return: A bool, True if the search is mean to be exclude, false otherwise.
+
+    :Example:
+    >>> is_file_or_dir("/path/to/file/hello.txt", ".*.txt")
+    False
+    """
+
+    if len(exclude) > 0:
+        for reg in exclude:
+            if re.search(reg, str(search)) is not None:
+                return True
+                
+    return False
