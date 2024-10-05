@@ -2,6 +2,23 @@ from pathlib import Path
 import re
 from typing import List
 
+from models.git_config import GitConfig
+from services.git_service import checkout_repo, clone_repo, pull_repo
+from models.search_command import SearchCommand
+
+def search_entrypoint_source(search_command: SearchCommand):
+    fullpath = Path(search_command.source_config.base_dir + str(search_command.search_path))
+
+    # isinstance so Mypy cease to trigger an error
+    if search_command.source_config.source.upper() == "GIT" and isinstance(search_command.source_config, GitConfig):
+        clone_repo(search_command.source_config)
+        checkout_repo(search_command.source_config)
+        pull_repo(search_command.source_config)
+
+
+    is_file_or_dir(fullpath, search_command.exclude)
+
+
 def is_file_or_dir(search: Path, exclude: List[str]) -> None:
     """
     Check whether the search input is a file or a directory.
