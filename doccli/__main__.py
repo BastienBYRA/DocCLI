@@ -1,12 +1,13 @@
 import os
-from pathlib import Path
-from typing import List
+from dotenv import load_dotenv
 from typing_extensions import Annotated
 import typer
 
-from doccli.command.search.search import is_file_or_dir
-from doccli.command.search.search_helper import get_search_base_dir, get_search_source, parse_exclude_list
-
+from command.search.search import search_entrypoint_source
+from enums.source_type import SourceType, get_source_type
+from helpers.envvar_helper import get_git_env, get_os_env
+from models.search_command import SearchCommand
+from models.source_config import SourceConfig
 
 app = typer.Typer()
 
@@ -21,21 +22,27 @@ def search(
            exclude: Annotated[
                str, typer.Option(prompt_required=False ,hidden=True, prompt="A list of regex to exclude files or directories in the form of 'regex1,regex2...'")] = "") -> None:
 
-    # Get and valid the SEARCH_SOURCE variable
-    search_source_env = os.environ.get("SEARCH_SOURCE")
-    search_source = get_search_source(search_source_env)
-    if search_source is None:
-        return None
-    
-    # Get and valid the SEARCH_BASE_DIR variable
-    search_base_dir_env = os.environ.get("SEARCH_BASE_DIR")
-    search_base_dir = get_search_base_dir(search_base_dir_env)
-    
-    # Parse the exclude list
-    exclude_list: List[str] = parse_exclude_list(exclude)
+    load_dotenv()
 
-    search_path = Path(search_base_dir + search_input)
-    is_file_or_dir(search_path, exclude_list)
+    # Get and valid the SEARCH_SOURCE variable
+    doccli_source = get_source_type(os.getenv("DOCCLI_SOURCE"))
+    if not doccli_source:
+        raise ValueError("DOCCLI_SOURCE is not defined.")
+    
+    # Get the config depending of the source the used specified
+    source: SourceConfig
+    match SourceType(doccli_source):
+        case SourceType.OS:
+            source = get_os_env()
+        case SourceType.GIT:
+            source = get_git_env()
+        case _:
+            print("Shouldn't be here")
+
+    print(source.base_dir)
+    # Create a SearchCommand object with necessary values to the "search" command
+    search_info = SearchCommand(source, search_input, exclude)
+    search_entrypoint_source(search_info)
 
 if __name__ == "__main__":
     app()
