@@ -12,10 +12,6 @@ from models.source_config import SourceConfig
 app = typer.Typer()
 
 @app.command()
-def main():
-    print("Hello from doccli")
-
-@app.command()
 def search(
            search_input: Annotated[
                str, typer.Argument(envvar="SEARCH_INPUT")],
@@ -37,12 +33,22 @@ def search(
         case SourceType.GIT:
             source = get_git_env()
         case _:
-            print("Shouldn't be here")
+            raise ValueError("Shouldn't be here")
 
-    print(source.base_dir)
     # Create a SearchCommand object with necessary values to the "search" command
     search_info = SearchCommand(source, search_input, exclude)
     search_entrypoint_source(search_info)
+    
+    
+@app.command()
+def version():
+    print("DocCLI: Version 0.0.0")
+    print("Project: https://github.com/BastienBYRA/DocCLI")
+
+@app.command()
+def settings():
+    print("Doccli Mode : TODO")
+
 
 if __name__ == "__main__":
     app()
