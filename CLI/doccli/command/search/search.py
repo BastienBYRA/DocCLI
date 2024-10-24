@@ -2,10 +2,6 @@ from pathlib import Path
 import re
 from typing import List
 
-from models.git_config import GitConfig
-from services.git_service import checkout_repo, clone_repo, pull_repo
-from models.search_command import SearchCommand
-
 def search_entrypoint_source(search_command: SearchCommand):
     fullpath = Path(search_command.source_config.base_dir + str(search_command.search_path))
 

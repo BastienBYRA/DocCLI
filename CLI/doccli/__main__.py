@@ -10,6 +10,7 @@ from models.search_command import SearchCommand
 from models.source_config import SourceConfig
 
 app = typer.Typer()
+load_dotenv()
 
 @app.command()
 def search(
@@ -18,26 +19,27 @@ def search(
            exclude: Annotated[
                str, typer.Option(prompt_required=False ,hidden=True, prompt="A list of regex to exclude files or directories in the form of 'regex1,regex2...'")] = "") -> None:
 
-    load_dotenv()
+    Entrypoint.search()
+    # load_dotenv()
 
-    # Get and valid the SEARCH_SOURCE variable
-    doccli_source = get_source_type(os.getenv("DOCCLI_SOURCE"))
-    if not doccli_source:
-        raise ValueError("DOCCLI_SOURCE is not defined.")
+    # # Get and valid the SEARCH_SOURCE variable
+    # doccli_source = get_source_type(os.getenv("DOCCLI_SOURCE"))
+    # if not doccli_source:
+    #     raise ValueError("DOCCLI_SOURCE is not defined.")
     
-    # Get the config depending of the source the used specified
-    source: SourceConfig
-    match SourceType(doccli_source):
-        case SourceType.OS:
-            source = get_os_env()
-        case SourceType.GIT:
-            source = get_git_env()
-        case _:
-            raise ValueError("Shouldn't be here")
+    # # Get the config depending of the source the used specified
+    # source: SourceConfig
+    # match SourceType(doccli_source):
+    #     case SourceType.OS:
+    #         source = get_os_env()
+    #     case SourceType.GIT:
+    #         source = get_git_env()
+    #     case _:
+    #         raise ValueError("Shouldn't be here")
 
-    # Create a SearchCommand object with necessary values to the "search" command
-    search_info = SearchCommand(source, search_input, exclude)
-    search_entrypoint_source(search_info)
+    # # Create a SearchCommand object with necessary values to the "search" command
+    # search_info = SearchCommand(source, search_input, exclude)
+    # search_entrypoint_source(search_info)
     
     
 @app.command()

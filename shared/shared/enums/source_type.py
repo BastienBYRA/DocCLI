@@ -1,9 +1,9 @@
-from enum import Enum
+from enum import StrEnum
 from typing import Optional
 
 from helpers.enum_helper import value_match_enum
 
-class SourceType(Enum):
+class SourceType(StrEnum):
     OS = "OS"
     GIT = "Git"
 
