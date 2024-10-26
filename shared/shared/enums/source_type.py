@@ -1,11 +1,12 @@
 from enum import StrEnum
 from typing import Optional
 
-from helpers.enum_helper import value_match_enum
+from shared.helpers.enum_helper import value_match_enum
 
 class SourceType(StrEnum):
-    OS = "OS"
-    GIT = "Git"
+    OS = "os"
+    GIT = "git"
+    NULL = "null"
 
 def get_source_type(search_source_env: Optional[str]) -> SourceType:
     if not search_source_env:

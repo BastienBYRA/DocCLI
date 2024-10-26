@@ -141,6 +141,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pandas-stubs"
+version = "2.2.3.241009"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "types-pytz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d4/30/1ca31098512cdcfbc6ce366072848dff497880d4285281606b5895244bbc/pandas_stubs-2.2.3.241009.tar.gz", hash = "sha256:d4ab618253f0acf78a5d0d2bfd6dffdd92d91a56a69bdc8144e5a5c6d25be3b5", size = 103801 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a3/be/d9ba3109c4c19a78e125f63074c4e436e447f30ece15f0ef1865e7178233/pandas_stubs-2.2.3.241009-py3-none-any.whl", hash = "sha256:3a6f8f142105a42550be677ba741ba532621f4e0acad2155c0e7b2450f114cfa", size = 157883 },
+]
+
+[[package]]
 name = "plum-dispatch"
 version = "1.7.4"
 source = { registry = "https://pypi.org/simple" }
@@ -231,11 +244,13 @@ wheels = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
+    { name = "annotated-types" },
     { name = "gitpython" },
     { name = "mypy" },
     { name = "pandas" },
+    { name = "pandas-stubs" },
     { name = "pydantic" },
     { name = "pypdf" },
     { name = "spire-doc" },
@@ -243,9 +258,11 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "annotated-types", specifier = ">=0.7.0" },
     { name = "gitpython", specifier = ">=3.1.43" },
     { name = "mypy", specifier = ">=1.12.1" },
     { name = "pandas", specifier = ">=2.2.3" },
+    { name = "pandas-stubs", specifier = ">=2.2.3.241009" },
     { name = "pydantic", specifier = ">=2.9.2" },
     { name = "pypdf", specifier = ">=5.0.1" },
     { name = "spire-doc", specifier = ">=12.7.1" },
@@ -280,6 +297,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/11/69/6c69479a518822c7295fdaa10a0aed3c95fa3d62676fca077fd20b93b946/Spire.Doc-12.7.1-py3-none-macosx_10_7_universal.whl", hash = "sha256:e28741779dae5a14e2b5138a5b4a9ec5960a5d6c2d7a2973ac7347e0b8e69cf0", size = 48486816 },
     { url = "https://files.pythonhosted.org/packages/a7/28/b6e3e998efc7525954fe5adc3db807247fd88b9514b2c22804cb8cc83981/Spire.Doc-12.7.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:68b0138f53bc4cb326a6aa904171c0e66e430337fb9ba0c3acaa74eb2ef567a5", size = 42420211 },
     { url = "https://files.pythonhosted.org/packages/05/73/cedc7e28cd583ab545468d24ffbc1a8b327fbe6218f037c4e6726b81ea16/Spire.Doc-12.7.1-py3-none-win_amd64.whl", hash = "sha256:f7cf1a82272abb41a46372bd67d71bb5b59d3062be32732275d37c471929b432", size = 27027822 },
+]
+
+[[package]]
+name = "types-pytz"
+version = "2024.2.0.20241003"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/d0/73aa3063a9ef9881bd7103cb4ae379bfd8fafda0e86b01b694d676313a4b/types-pytz-2024.2.0.20241003.tar.gz", hash = "sha256:575dc38f385a922a212bac00a7d6d2e16e141132a3c955078f4a4fd13ed6cb44", size = 5474 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/86/60/2a2977ce0f91255bbb668350b127a801a06ad37c326a2e5bfd52f03e0784/types_pytz-2024.2.0.20241003-py3-none-any.whl", hash = "sha256:3e22df1336c0c6ad1d29163c8fda82736909eb977281cb823c57f8bae07118b7", size = 5245 },
 ]
 
 [[package]]

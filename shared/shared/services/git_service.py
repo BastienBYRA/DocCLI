@@ -1,22 +1,11 @@
-from shared.shared.configs.git_config import GitConfig
+from shared.configs.git_config import GitConfig
 from git import Repo, GitCommandError
+from pydantic import BaseModel
 
-class GitService:
-    def __init__(self, git_config: GitConfig):
-        """
-        Initialize the GitService with the provided configuration.
+class GitService(BaseModel):
+    git_config: GitConfig   # Configuration object containing Git details such as the repo URL, credentials, and base directory.
 
-        :param git_config: Configuration object containing Git details such as the repo URL, credentials, and base directory.
-        :type git_config: GitConfig
-        :return: None
-
-        :Example:
-        >>> config = GitConfig(repo_url="https://github.com/user/repo.git", base_dir="/path/to/dir", branch="main")
-        >>> git_service = GitService(config)
-        """
-        self.git_config = git_config
-
-    def clone_repo(self):
+    def clone_repo(self) -> None:
         """
         Clone the repository from the URL specified in the configuration.
         If the repository already exists, it will skip the cloning process.
@@ -32,13 +21,10 @@ class GitService:
         repo_url = self.git_config.repo_url
         base_dir = self.git_config.base_dir
         git_username = self.git_config.username
-        git_password = self.git_config.password
+        git_token = self.git_config.token
 
-        if not repo_url:
-            raise ValueError("GIT_URL is not defined.")
-
-        if (not git_username and git_password) or (git_username and not git_password):
-            raise ValueError("Either the git username or password is defined. Define both or none.")
+        if (git_username and git_token):
+            self.login()
 
         try:
             print(f"Cloning repository from {repo_url} into {base_dir}...")
@@ -54,7 +40,32 @@ class GitService:
         self.checkout_repo()
         self.pull_repo()
 
-    def pull_repo(self):
+    def login(self) -> bool:
+        """
+        Authenticate with Git using the username and token provided in the configuration.
+
+        This method logs into the Git service using the credentials stored in the 
+        configuration. If both username and token are available, it will attempt 
+        authentication. If successful, it enables authenticated Git operations 
+        such as cloning and pulling from private repositories. 
+
+        Note:
+        This method must be implemented to handle the specific authentication 
+        mechanism required (e.g., configuring Git credentials, setting up a credential 
+        helper, or using an API token instead of a token).
+
+        :return: True if login is successful, False otherwise.
+
+        :Example:
+        >>> git_service.login()
+        Successfully authenticated with Git.
+        """
+        #raise NotImplementedError("The method login is not implemented yet.")
+        print("[WARNING]: The method login is not implemented yet, you will not be authentified.")
+        return False
+
+
+    def pull_repo(self) -> None:
         """
         Pull the latest changes from the remote repository's origin branch.
 
@@ -72,7 +83,7 @@ class GitService:
         except Exception as e:
             raise RuntimeError(f"Error while pulling the repository: {e}")
 
-    def checkout_repo(self):
+    def checkout_repo(self) -> None:
         """
         Checkout to the branch specified in the configuration.
         This will ensure that the repository is on the correct branch before pulling changes.

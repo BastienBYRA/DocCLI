@@ -1,8 +1,11 @@
+from dataclasses import dataclass
 from pathlib import Path
 
-
+@dataclass
 class DefaultFileReader:
-    def read(self, search: Path) -> str:
+
+    @staticmethod
+    def read(search: Path) -> str:
         text: str = ""
         with search.open() as f:
             for line in f:

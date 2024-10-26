@@ -1,46 +1,44 @@
+from dataclasses import dataclass
 import os
+from typing import List
 
-from pydantic import BaseModel
-from shared.shared.configs.source_config import SourceConfig
-from shared.shared.enums.source_type import SourceType, get_source_type
-from shared.shared.helpers.envvar_helper import get_git_env, get_os_env
-from shared.shared.models.search_command import SearchCommand
-from shared.shared.services.file_service import FileService
-from shared.shared.services.git_service import GitService
+from shared.commands.search import Search
+from shared.configs.git_config import GitConfig
+from shared.configs.base_config import BaseConfig
+from shared.configs.os_config import OsConfig
+from shared.enums.source_type import SourceType, get_source_type
+from shared.services.git_service import GitService
 
-
+@dataclass
 class Entrypoint():
 
-    def search(self, search_input: str, exclude: str):
+    @staticmethod
+    def search(search_input: str, exclude: str) -> None:
 
         # Get and valid the SEARCH_SOURCE variable
         doccli_source = get_source_type(os.getenv("DOCCLI_SOURCE"))
         if not doccli_source:
             raise ValueError("DOCCLI_SOURCE is not defined.")
         
+        print(os.getenv("DOCCLI_SOURCE"))
+        print(doccli_source)
+        
         # Get the config depending of the source the used specified
-        config: SourceConfig
+        config: BaseConfig
         match SourceType(doccli_source):
             case SourceType.OS:
-                config = get_os_env()
+                config = OsConfig.create_from_env()
             case SourceType.GIT:
-                config = get_git_env()
-                GitService.clone_repo()
+                config = GitConfig.create_from_env()
+                GitService(git_config=config).clone_repo()
             case _:
                 raise ValueError("The source specified is unknown. Expected values: os, git")
-
-        # Create a SearchCommand object with necessary values to the "search" command
-        # search_info = SearchCommand(config, self.search_input, self.exclude)
-
-        file_service: FileService = FileService()
-
-        # searched_filepath: str = config.base_dir + search_input
-
-        if not file_service.path_exist(searched_filepath):
-            raise ValueError(f"{searched_filepath} doesn't exist.")
-        
-        if file_service.is_folder(searched_filepath):
-            file_service.tree_folder(searched_filepath)
+            
+        # Convert the exclude list given by the user to a real list
+        exclude_list: List[str]
+        if exclude:
+            exclude_list = exclude.split(",")
         else:
-            file_service.read_file(searched_filepath)
-
+            exclude_list = []
+        
+        Search().search(config, search_input, exclude_list)
