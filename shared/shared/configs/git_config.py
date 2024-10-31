@@ -21,7 +21,7 @@ class GitConfig(BaseConfig):
         base_dir = cast(str, os.getenv("DOCCLI_BASE_DIR"))
         repo_url = cast(str, os.getenv("GIT_URL"))
         username = cast(str, os.getenv("GIT_USERNAME"))
-        token = cast(str, os.getenv("GIT_token"))
+        token = cast(str, os.getenv("GIT_TOKEN"))
         branch = cast(str, os.getenv("GIT_BRANCH"))
         
         return cls(source=SourceType.GIT, base_dir=base_dir, repo_url=repo_url, username=username, token=token, branch=branch)
