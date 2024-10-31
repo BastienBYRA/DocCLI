@@ -1,0 +1,20 @@
+[project]
+name = "shared"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "annotated-types>=0.7.0",
+    "gitpython>=3.1.43",
+    "mypy>=1.12.1",
+    "pandas-stubs>=2.2.3.241009",
+    "pandas>=2.2.3",
+    "pydantic>=2.9.2",
+    "pypdf>=5.0.1",
+    "spire-doc>=12.7.1",
+]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
