@@ -1,6 +1,4 @@
-import os
 from dotenv import find_dotenv, load_dotenv
-import shared
 from typing_extensions import Annotated
 import typer
 from shared.entrypoint import Entrypoint

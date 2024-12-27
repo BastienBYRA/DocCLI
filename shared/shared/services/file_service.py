@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 from typing import Generator, List
+from pick import pick
 
 from pandas import DataFrame
 
@@ -18,7 +19,6 @@ class FileService():
 
     @staticmethod
     def path_exist(search: Path) -> bool:
-        print(f"Est-ce que ca existe ? : {search.exists()}")
         if not search.exists() :
             print(f"{search} does not exist.")
             return False
@@ -49,6 +49,9 @@ class FileService():
 
     @staticmethod
     def is_folder(search: Path) -> bool:
+        exist = search.exists()
+        if exist is False:
+            ValueError("There is no file nor folder.")
         return search.is_dir()
     
     @staticmethod
@@ -79,8 +82,9 @@ class FileService():
     
     
     def tree_folder(self, search: Path, exclude_list: List[str]) -> None:
-        for line in self.tree(search, prefix="", exclude_list=exclude_list):
-            print(line)
+        self.tree(search, prefix="", exclude_list=exclude_list)
+        # for line in self.tree(search, prefix="", exclude_list=exclude_list):
+            # print(line)
     
     @staticmethod
     def is_search_excluded(search: Path, exclude: List[str]) -> bool:
@@ -104,36 +108,73 @@ class FileService():
                     return True
                     
         return False
-            
-    # Based on this code : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
-    def tree(self, dir_path: Path, exclude_list: List[str], prefix: str = '') -> Generator[str, None, None]:
-        """
-        A recursive generator, given a directory Path object
-        will yield a visual tree structure line by line
-        with each line prefixed by the same characters
-        """
-        # prefix components:
-        space =  '    '
-        branch = '│   '
-        # pointers:
-        tee =    '├── '
-        last =   '└── '
 
-        contents = list(dir_path.iterdir())
-        # contents each get pointers that are ├── with a final └── :
-        pointers = [tee] * (len(contents) - 1) + [last]
-        for pointer, path in zip(pointers, contents):
 
-            # Check if the file is to be exclude
-            filepath = Path(prefix + pointer + path.name)
-            if self.is_search_excluded(filepath, exclude_list) is False:
-                yield prefix + pointer + path.name
+    def tree(self, dir_path: Path, exclude_list: List[str], prefix: str = ''):
 
-            # Check if the directory is to be exclude
-            if path.is_dir() and self.is_search_excluded(path, exclude_list) is False: # extend the prefix and recurse:
-                extension = branch if pointer == tee else space 
-                # i.e. space because last, └── , above so no more |
-                yield from self.tree(path, prefix=prefix+extension, exclude_list=exclude_list)
+        # Récupère la liste des fichiers
+        contents = dir_path.iterdir()
+
+        # Parcours la liste des fichiers, si on trouve un fichier, l'ajoute à la liste, si dossier, l'ajouter à la liste avec "/" à la fin
+        title = 'Choose the file or folder you want to see the content: '
+        options = []
+        for result in contents:
+            if not result.is_dir():
+                options.append(result.name)
+            else:
+                options.append(f"{result.name}/")
+
+        # Optionnel : Rajoute un texte "Go back" et "Quit"
+        
+        option: str
+        index: int
+        option, index = pick(options, title)
+
+        # Si l'utilisateur choisis un dossier, on relance la fonction, sinon on print le contenu
+        if option[-1] == "/":
+            path: Path = Path.joinpath(dir_path, option)
+            self.tree(path, exclude_list=exclude_list, prefix=prefix)
+
+        # Optionnel : Rajoute un texte "Go back" et "Quit"
+
+        return dir_path
+
+
+
+
+
+
+
+
+    # # Based on this code : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
+    # def tree(self, dir_path: Path, exclude_list: List[str], prefix: str = '') -> Generator[str, None, None]:
+    #     """
+    #     A recursive generator, given a directory Path object
+    #     will yield a visual tree structure line by line
+    #     with each line prefixed by the same characters
+    #     """
+    #     # prefix components:
+    #     space =  '    '
+    #     branch = '│   '
+    #     # pointers:
+    #     tee =    '├── '
+    #     last =   '└── '
+
+    #     contents = list(dir_path.iterdir())
+    #     # contents each get pointers that are ├── with a final └── :
+    #     pointers = [tee] * (len(contents) - 1) + [last]
+    #     for pointer, path in zip(pointers, contents):
+
+    #         # Check if the file is to be exclude
+    #         filepath = Path(prefix + pointer + path.name)
+    #         if self.is_search_excluded(filepath, exclude_list) is False:
+    #             yield prefix + pointer + path.name
+
+    #         # Check if the directory is to be exclude
+    #         if path.is_dir() and self.is_search_excluded(path, exclude_list) is False: # extend the prefix and recurse:
+    #             extension = branch if pointer == tee else space 
+    #             # i.e. space because last, └── , above so no more |
+    #             yield from self.tree(path, prefix=prefix+extension, exclude_list=exclude_list)
 
 
     # def is_folder_or_file(this, search: Path):
