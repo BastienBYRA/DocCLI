@@ -10,6 +10,7 @@ from shared.enums.file_type import FileType
 from shared.services.file_readers.default_file_reader import DefaultFileReader
 from shared.services.file_readers.excel_file_reader import ExcelFileReader
 from shared.services.file_readers.pdf_file_reader import PdfFileReader
+from shared.configs.base_config import BaseConfig
 
 class FileService():
     """Classe utilitaire pour gérer des fichiers. Contient uniquement des méthodes statiques."""
@@ -81,10 +82,63 @@ class FileService():
         print(file_content)
     
     
-    def tree_folder(self, search: Path, exclude_list: List[str]) -> None:
-        self.tree(search, prefix="", exclude_list=exclude_list)
-        # for line in self.tree(search, prefix="", exclude_list=exclude_list):
-            # print(line)
+    def tree_folder(self, search: Path, exclude_list: List[str], config: BaseConfig) -> None:
+
+        # # Check à chaque passage si on à faire à u fichier ou un dossier (ou rien)
+        # if not search.is_dir:
+        #     self.read_file(search)
+        
+        # Make sure the user don't go outside the base directory defined
+        canGoBack = False
+        print(str(Path(config.base_dir)) in str(search))
+        print(str(Path(config.base_dir).resolve()))
+        print(str(search.resolve()))
+        print(str(config.base_dir) != str(search))
+        print("----------------")
+        print("----------------")
+        if str(Path(config.base_dir).resolve()) in str(search.resolve()) and str(config.base_dir) != str(search):
+            canGoBack = True
+
+        # Récupère la liste des fichiers
+        contents = search.iterdir()
+
+        # Parcours la liste des fichiers, si on trouve un fichier, l'ajoute à la liste, si dossier, l'ajouter à la liste avec "/" à la fin
+        title = 'Choose the file or folder you want to see the content: '
+        options = []
+
+        for result in contents:
+            if result.is_dir():
+                options.append(f"{result.name}/")
+            else:
+                options.append(result.name)
+
+        # Make sure the user don't go outside the base directory defined
+        if canGoBack is True:
+            options.append("Go back")
+        options.append("Quit")
+
+        if len(options) <= 2:
+            title = "There is no files nor folders in the directory :"
+
+        option, index = pick(options, title)
+        new_search: Path
+
+        # If "Quit"
+        if index == len(options) - 1:
+            exit(0)
+        # If Go Back
+        elif index == len(options) - 2 and canGoBack is True:
+            new_search = Path(search.parent)
+            return self.tree_folder(new_search, exclude_list, config)
+        # Check folder
+        elif option[-1] == "/":
+            new_search = Path.joinpath(search, option)
+            return self.tree_folder(new_search, exclude_list, config)
+        # Check file
+        else:
+            new_search = Path.joinpath(search, option)
+            return self.read_file(new_search)
+        
     
     @staticmethod
     def is_search_excluded(search: Path, exclude: List[str]) -> bool:
@@ -108,39 +162,6 @@ class FileService():
                     return True
                     
         return False
-
-
-    def tree(self, dir_path: Path, exclude_list: List[str], prefix: str = ''):
-
-        # Récupère la liste des fichiers
-        contents = dir_path.iterdir()
-
-        # Parcours la liste des fichiers, si on trouve un fichier, l'ajoute à la liste, si dossier, l'ajouter à la liste avec "/" à la fin
-        title = 'Choose the file or folder you want to see the content: '
-        options = []
-        for result in contents:
-            if not result.is_dir():
-                options.append(result.name)
-            else:
-                options.append(f"{result.name}/")
-
-        # Optionnel : Rajoute un texte "Go back" et "Quit"
-        
-        option: str
-        index: int
-        option, index = pick(options, title)
-
-        # Si l'utilisateur choisis un dossier, on relance la fonction, sinon on print le contenu
-        if option[-1] == "/":
-            path: Path = Path.joinpath(dir_path, option)
-            self.tree(path, exclude_list=exclude_list, prefix=prefix)
-
-        # Optionnel : Rajoute un texte "Go back" et "Quit"
-
-        return dir_path
-
-
-
 
 
 

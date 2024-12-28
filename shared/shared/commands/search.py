@@ -19,6 +19,6 @@ class Search():
             raise ValueError(f"The search {search_input} is excluded.")
 
         if file_service.is_folder(searched_path):
-            file_service.tree_folder(searched_path, exclude_list)
+            file_service.tree_folder(searched_path, exclude_list, config)
         else:
             file_service.read_file(searched_path)
