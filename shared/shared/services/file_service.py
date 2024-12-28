@@ -61,7 +61,7 @@ class FileService():
         filetype: str = ""
 
         if len(search.suffixes) == 0:
-            raise ValueError(f"The file {search} has no suffix.")
+            raise ValueError(f"The file {search} has no suffix, default to .txt behavior.")
 
         if len(search.suffixes) > 1:
             print(f"The file {search} has several suffixes, only the last one is taken into account")
@@ -69,7 +69,7 @@ class FileService():
         else:
             filetype = search.suffix
         
-        match FileType(filetype):
+        match filetype:
             case FileType.EXCEL:
                 file_content = ExcelFileReader.read(search)
             # case FileType.WORD:
@@ -79,24 +79,15 @@ class FileService():
             case _:
                 file_content = DefaultFileReader.read(search)
 
+        print("-------------- START CONTENT --------------")
         print(file_content)
+        print("--------------- END CONTENT ---------------")
     
     
     def tree_folder(self, search: Path, exclude_list: List[str], config: BaseConfig) -> None:
-
-        # # Check à chaque passage si on à faire à u fichier ou un dossier (ou rien)
-        # if not search.is_dir:
-        #     self.read_file(search)
-        
         # Make sure the user don't go outside the base directory defined
         canGoBack = False
-        print(str(Path(config.base_dir)) in str(search))
-        print(str(Path(config.base_dir).resolve()))
-        print(str(search.resolve()))
-        print(str(config.base_dir) != str(search))
-        print("----------------")
-        print("----------------")
-        if str(Path(config.base_dir).resolve()) in str(search.resolve()) and str(config.base_dir) != str(search):
+        if str(Path(config.base_dir).resolve()) in str(search.resolve()) and str(Path(config.base_dir).resolve()) != str(search.resolve()):
             canGoBack = True
 
         # Récupère la liste des fichiers
