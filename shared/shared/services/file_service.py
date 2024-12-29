@@ -2,13 +2,18 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 from typing import Generator, List
+from pick import pick
 
 from pandas import DataFrame
 
 from shared.enums.file_type import FileType
+from shared.models.file_content import FileContent
 from shared.services.file_readers.default_file_reader import DefaultFileReader
 from shared.services.file_readers.excel_file_reader import ExcelFileReader
 from shared.services.file_readers.pdf_file_reader import PdfFileReader
+from shared.configs.base_config import BaseConfig
+from shared.models.tree_picker_option import TreePickerOption
+from shared.models.tree_picker import TreePicker
 
 class FileService():
     """Classe utilitaire pour gérer des fichiers. Contient uniquement des méthodes statiques."""
@@ -18,7 +23,6 @@ class FileService():
 
     @staticmethod
     def path_exist(search: Path) -> bool:
-        print(f"Est-ce que ca existe ? : {search.exists()}")
         if not search.exists() :
             print(f"{search} does not exist.")
             return False
@@ -49,15 +53,18 @@ class FileService():
 
     @staticmethod
     def is_folder(search: Path) -> bool:
+        exist = search.exists()
+        if exist is False:
+            ValueError("There is no file nor folder.")
         return search.is_dir()
     
     @staticmethod
-    def read_file(search: Path) -> None:
+    def read_file(search: Path) -> FileContent:
         file_content: str | DataFrame = ""
         filetype: str = ""
 
         if len(search.suffixes) == 0:
-            raise ValueError(f"The file {search} has no suffix.")
+            raise ValueError(f"The file {search} has no suffix, default to .txt behavior.")
 
         if len(search.suffixes) > 1:
             print(f"The file {search} has several suffixes, only the last one is taken into account")
@@ -65,7 +72,7 @@ class FileService():
         else:
             filetype = search.suffix
         
-        match FileType(filetype):
+        match filetype:
             case FileType.EXCEL:
                 file_content = ExcelFileReader.read(search)
             # case FileType.WORD:
@@ -75,12 +82,48 @@ class FileService():
             case _:
                 file_content = DefaultFileReader.read(search)
 
+        file: FileContent = FileContent(search.name, file_content)
+        return file
+        print("-------------- START CONTENT --------------")
         print(file_content)
+        print("--------------- END CONTENT ---------------")
     
     
-    def tree_folder(self, search: Path, exclude_list: List[str]) -> None:
-        for line in self.tree(search, prefix="", exclude_list=exclude_list):
-            print(line)
+    def tree_folder(self, search: Path, exclude_list: List[str], config: BaseConfig) -> TreePicker:
+        # Make sure the user don't go outside the base directory defined
+        can_go_back = False
+        if str(Path(config.base_dir).resolve()) in str(search.resolve()) and str(Path(config.base_dir).resolve()) != str(search.resolve()):
+            can_go_back = True
+
+        # Récupère la liste des fichiers
+        contents = search.iterdir()
+
+        # Parcours la liste des fichiers, si on trouve un fichier, l'ajoute à la liste, si dossier, l'ajouter à la liste avec "/" à la fin
+        title = 'Choose the file or folder you want to see the content: '
+        options = []
+
+        for result in contents:
+            if result.is_dir():
+                options.append(f"{result.name}/")
+            else:
+                options.append(result.name)
+
+        # Make sure the user don't go outside the base directory defined
+        if can_go_back is True:
+            options.append("Go back")
+        options.append("Quit")
+
+        if len(options) <= 2:
+            title = "There is no files nor folders in the directory :"
+
+        # Ajoute les options à un objet TreePicker
+        picker: TreePicker = TreePicker([], title, can_go_back, search, exclude_list, config)
+        for index in range(len(options)):
+            picker_opt: TreePickerOption = TreePickerOption(index, options[index])
+            picker.add_option(picker_opt)
+
+        return picker
+        
     
     @staticmethod
     def is_search_excluded(search: Path, exclude: List[str]) -> bool:
@@ -104,36 +147,40 @@ class FileService():
                     return True
                     
         return False
-            
-    # Based on this code : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
-    def tree(self, dir_path: Path, exclude_list: List[str], prefix: str = '') -> Generator[str, None, None]:
-        """
-        A recursive generator, given a directory Path object
-        will yield a visual tree structure line by line
-        with each line prefixed by the same characters
-        """
-        # prefix components:
-        space =  '    '
-        branch = '│   '
-        # pointers:
-        tee =    '├── '
-        last =   '└── '
 
-        contents = list(dir_path.iterdir())
-        # contents each get pointers that are ├── with a final └── :
-        pointers = [tee] * (len(contents) - 1) + [last]
-        for pointer, path in zip(pointers, contents):
 
-            # Check if the file is to be exclude
-            filepath = Path(prefix + pointer + path.name)
-            if self.is_search_excluded(filepath, exclude_list) is False:
-                yield prefix + pointer + path.name
 
-            # Check if the directory is to be exclude
-            if path.is_dir() and self.is_search_excluded(path, exclude_list) is False: # extend the prefix and recurse:
-                extension = branch if pointer == tee else space 
-                # i.e. space because last, └── , above so no more |
-                yield from self.tree(path, prefix=prefix+extension, exclude_list=exclude_list)
+
+
+    # # Based on this code : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
+    # def tree(self, dir_path: Path, exclude_list: List[str], prefix: str = '') -> Generator[str, None, None]:
+    #     """
+    #     A recursive generator, given a directory Path object
+    #     will yield a visual tree structure line by line
+    #     with each line prefixed by the same characters
+    #     """
+    #     # prefix components:
+    #     space =  '    '
+    #     branch = '│   '
+    #     # pointers:
+    #     tee =    '├── '
+    #     last =   '└── '
+
+    #     contents = list(dir_path.iterdir())
+    #     # contents each get pointers that are ├── with a final └── :
+    #     pointers = [tee] * (len(contents) - 1) + [last]
+    #     for pointer, path in zip(pointers, contents):
+
+    #         # Check if the file is to be exclude
+    #         filepath = Path(prefix + pointer + path.name)
+    #         if self.is_search_excluded(filepath, exclude_list) is False:
+    #             yield prefix + pointer + path.name
+
+    #         # Check if the directory is to be exclude
+    #         if path.is_dir() and self.is_search_excluded(path, exclude_list) is False: # extend the prefix and recurse:
+    #             extension = branch if pointer == tee else space 
+    #             # i.e. space because last, └── , above so no more |
+    #             yield from self.tree(path, prefix=prefix+extension, exclude_list=exclude_list)
 
 
     # def is_folder_or_file(this, search: Path):

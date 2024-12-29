@@ -1,16 +1,11 @@
-.PHONY: run-cli run-backend build-shared
-
-# Cible pour construire le module partagé
-build-shared:
-	@echo "Building shared module..."
-	cd shared && uv build
+.PHONY: run-cli run-api
 
 # Cible pour exécuter l'application CLI
-run-cli: build-shared
+run-cli:
 	@echo "Running CLI application..."
-	cd CLI && uv add -U ../shared && uv run -- ./doccli
+	cd CLI && uv add ../shared --reinstall && uv run CLI search /
 
-# Cible pour exécuter l'application backend (si nécessaire)
-run-backend: build-shared
+# Cible pour exécuter l'application backend
+run-api:
 	@echo "Running Backend application..."
-	cd backend && uv add -U ../shared && uv run -- ./backend
+	cd API && uv add ../shared --reinstall && uv run backend

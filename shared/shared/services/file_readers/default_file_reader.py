@@ -9,5 +9,5 @@ class DefaultFileReader:
         text: str = ""
         with search.open() as f:
             for line in f:
-                text += f"{line} \n"
+                text += f"{line}"
         return text

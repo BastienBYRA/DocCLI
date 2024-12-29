@@ -20,9 +20,6 @@ class Entrypoint():
         if not doccli_source:
             raise ValueError("DOCCLI_SOURCE is not defined.")
         
-        print(os.getenv("DOCCLI_SOURCE"))
-        print(doccli_source)
-        
         # Get the config depending of the source the used specified
         config: BaseConfig
         match SourceType(doccli_source):
@@ -41,4 +38,4 @@ class Entrypoint():
         else:
             exclude_list = []
         
-        Search().search(config, search_input, exclude_list)
+        return Search().search(config, search_input, exclude_list)
