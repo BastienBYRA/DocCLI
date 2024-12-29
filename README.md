@@ -1,9 +1,13 @@
+# ⚠️ THIS PROJECT IS NOT YET READY TO BE USE
+
 # DocCLI
 DocCLI is a program that allows you to access your documentation from your CLI at any time.
 
 ## How it works
 
-DocCLI is a two-part application: a CLI that can act as both a **client** and/or a **server**, and a backend that serves as the **server**.
+DocCLI is a two-part application:
+- a **CLI** that can act as both a **client** and/or a **server**.
+- a **backend** that serves as the **server**.
 
 The purpose of this program is to read files from a local source or a remote source. These files can be stored on a hard drive or in a Git repository (S3 support is planned for the future).
 

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from shared.shared.services.git_service import checkout_repo
+from shared.services.git_service import checkout_repo
 
 app = FastAPI()
 

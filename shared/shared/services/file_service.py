@@ -7,10 +7,13 @@ from pick import pick
 from pandas import DataFrame
 
 from shared.enums.file_type import FileType
+from shared.models.file_content import FileContent
 from shared.services.file_readers.default_file_reader import DefaultFileReader
 from shared.services.file_readers.excel_file_reader import ExcelFileReader
 from shared.services.file_readers.pdf_file_reader import PdfFileReader
 from shared.configs.base_config import BaseConfig
+from shared.models.tree_picker_option import TreePickerOption
+from shared.models.tree_picker import TreePicker
 
 class FileService():
     """Classe utilitaire pour gérer des fichiers. Contient uniquement des méthodes statiques."""
@@ -56,7 +59,7 @@ class FileService():
         return search.is_dir()
     
     @staticmethod
-    def read_file(search: Path) -> None:
+    def read_file(search: Path) -> FileContent:
         file_content: str | DataFrame = ""
         filetype: str = ""
 
@@ -79,16 +82,18 @@ class FileService():
             case _:
                 file_content = DefaultFileReader.read(search)
 
+        file: FileContent = FileContent(search.name, file_content)
+        return file
         print("-------------- START CONTENT --------------")
         print(file_content)
         print("--------------- END CONTENT ---------------")
     
     
-    def tree_folder(self, search: Path, exclude_list: List[str], config: BaseConfig) -> None:
+    def tree_folder(self, search: Path, exclude_list: List[str], config: BaseConfig) -> TreePicker:
         # Make sure the user don't go outside the base directory defined
-        canGoBack = False
+        can_go_back = False
         if str(Path(config.base_dir).resolve()) in str(search.resolve()) and str(Path(config.base_dir).resolve()) != str(search.resolve()):
-            canGoBack = True
+            can_go_back = True
 
         # Récupère la liste des fichiers
         contents = search.iterdir()
@@ -104,31 +109,20 @@ class FileService():
                 options.append(result.name)
 
         # Make sure the user don't go outside the base directory defined
-        if canGoBack is True:
+        if can_go_back is True:
             options.append("Go back")
         options.append("Quit")
 
         if len(options) <= 2:
             title = "There is no files nor folders in the directory :"
 
-        option, index = pick(options, title)
-        new_search: Path
+        # Ajoute les options à un objet TreePicker
+        picker: TreePicker = TreePicker([], title, can_go_back, search, exclude_list, config)
+        for index in range(len(options)):
+            picker_opt: TreePickerOption = TreePickerOption(index, options[index])
+            picker.add_option(picker_opt)
 
-        # If "Quit"
-        if index == len(options) - 1:
-            exit(0)
-        # If Go Back
-        elif index == len(options) - 2 and canGoBack is True:
-            new_search = Path(search.parent)
-            return self.tree_folder(new_search, exclude_list, config)
-        # Check folder
-        elif option[-1] == "/":
-            new_search = Path.joinpath(search, option)
-            return self.tree_folder(new_search, exclude_list, config)
-        # Check file
-        else:
-            new_search = Path.joinpath(search, option)
-            return self.read_file(new_search)
+        return picker
         
     
     @staticmethod

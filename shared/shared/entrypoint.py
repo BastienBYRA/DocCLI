@@ -38,4 +38,4 @@ class Entrypoint():
         else:
             exclude_list = []
         
-        Search().search(config, search_input, exclude_list)
+        return Search().search(config, search_input, exclude_list)
