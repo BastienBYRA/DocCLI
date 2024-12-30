@@ -14,6 +14,11 @@ class Search():
         file_service: FileService = self.file_service
         searched_path = Path(config.base_dir + search_input)
 
+        # Prevent user from doing a Directory Traversal Attack
+        # c.f: https://www.youtube.com/watch?v=NQwUDLMOrHo
+        if str(Path(config.base_dir).resolve()) not in str(searched_path.resolve()):
+            raise ValueError(f"The search path {searched_path.resolve()} is outside the base directory configured by the administrator.")
+        
         if not file_service.path_exist(searched_path):
             raise ValueError(f"{searched_path} doesn't exist.")
         
