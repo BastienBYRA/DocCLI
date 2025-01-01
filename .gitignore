@@ -10,3 +10,5 @@ dist
 *.egg-info
 
 HIDE.md
+
+temp.py

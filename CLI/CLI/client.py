@@ -1,27 +1,25 @@
 from pathlib import Path
 from pick import pick
 
-from shared.commands.search import Search
-from shared.models.file_content import FileContent
-from shared.models.tree_picker import TreePicker
+from shared.models.directory_content import DirectoryContent
+from shared.models.search import Search
+from shared.models.search_result import SearchResult
 from shared.services.file_service import FileService
 
 
 class CLI:
 
-    def choose_pick(picker: TreePicker) -> TreePicker | FileContent:
-        file_service: FileService = FileService()
+    def choose_pick(result: SearchResult, search: Search, base_dir: str) -> SearchResult:
+        directory: DirectoryContent = result.directory_content
 
         options = []
-        for opt in picker.options:
+        for opt in directory.options:
             options.append(opt.name)
 
-        title = picker.title
-        can_go_back = picker.can_go_back
-        search = picker.search
-        exclude_list = picker.exclude_list
-        config = picker.config
+        title = directory.title
+        can_go_back = directory.can_go_back
 
+        # Ask the user to choose the file/directory to browse
         option, index = pick(options, title)
         new_search: Path
 
@@ -30,13 +28,15 @@ class CLI:
             exit(0)
         # If Go Back
         elif index == len(options) - 2 and can_go_back is True:
-            new_search = Path(search.parent)
-            return file_service.tree_folder(new_search, exclude_list, config)
+            new_search = Path(search.search_path.parent)
+            search.search_path = new_search
+            return FileService.tree_folder(search, base_dir)
         # Check folder
         elif option[-1] == "/":
-            new_search = Path.joinpath(search, option)
-            return file_service.tree_folder(new_search, exclude_list, config)
+            new_search = Path.joinpath(search.search_path, option)
+            search.search_path = new_search
+            return FileService.tree_folder(search, base_dir)
         # Check file
         else:
-            new_search = Path.joinpath(search, option)
-            return file_service.read_file(new_search)
+            new_search = Path.joinpath(search.search_path, option)
+            return FileService.read_file(new_search)

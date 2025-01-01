@@ -8,14 +8,16 @@ from pandas import DataFrame
 
 from shared.enums.file_type import FileType
 from shared.models.file_content import FileContent
+from shared.models.search import Search
+from shared.models.search_result import SearchResult
 from shared.services.file_readers.default_file_reader import DefaultFileReader
 from shared.services.file_readers.excel_file_reader import ExcelFileReader
 from shared.services.file_readers.pdf_file_reader import PdfFileReader
 from shared.configs.base_config import BaseConfig
-from shared.models.tree_picker_option import TreePickerOption
-from shared.models.tree_picker import TreePicker
+from shared.models.directory_content_option import DirectoryContentOption
+from shared.models.directory_content import DirectoryContent
 
-class FileService():
+class FileService:
     """Classe utilitaire pour gérer des fichiers. Contient uniquement des méthodes statiques."""
 
     # def __init__(self) -> None:
@@ -59,7 +61,7 @@ class FileService():
         return search.is_dir()
     
     @staticmethod
-    def read_file(search: Path) -> FileContent:
+    def read_file(search: Path) -> SearchResult:
         file_content: str | DataFrame = ""
         filetype: str = ""
 
@@ -82,21 +84,20 @@ class FileService():
             case _:
                 file_content = DefaultFileReader.read(search)
 
-        file: FileContent = FileContent(search.name, file_content)
-        return file
-        print("-------------- START CONTENT --------------")
-        print(file_content)
-        print("--------------- END CONTENT ---------------")
+        file_content: FileContent = FileContent(search.name, file_content)
+        return SearchResult(file_content, None)
     
     
-    def tree_folder(self, search: Path, exclude_list: List[str], config: BaseConfig) -> TreePicker:
+    def tree_folder(search: Search, base_dir_path: str) -> SearchResult:
+        search_path: Path = search.search_path
+
         # Make sure the user don't go outside the base directory defined
         can_go_back = False
-        if str(Path(config.base_dir).resolve()) in str(search.resolve()) and str(Path(config.base_dir).resolve()) != str(search.resolve()):
+        if str(Path(base_dir_path).resolve()) in str(search_path.resolve()) and str(Path(base_dir_path).resolve()) != str(search_path.resolve()):
             can_go_back = True
 
         # Récupère la liste des fichiers
-        contents = search.iterdir()
+        contents = search_path.iterdir()
 
         # Parcours la liste des fichiers, si on trouve un fichier, l'ajoute à la liste, si dossier, l'ajouter à la liste avec "/" à la fin
         title = 'Choose the file or folder you want to see the content: '
@@ -116,13 +117,13 @@ class FileService():
         if len(options) <= 2:
             title = "There is no files nor folders in the directory :"
 
-        # Ajoute les options à un objet TreePicker
-        picker: TreePicker = TreePicker([], title, can_go_back, search, exclude_list, config)
+        # Ajoute les options à un objet DirectoryContent
+        directory_content: DirectoryContent = DirectoryContent([], title, can_go_back)
         for index in range(len(options)):
-            picker_opt: TreePickerOption = TreePickerOption(index, options[index])
-            picker.add_option(picker_opt)
+            directory_content_opt: DirectoryContentOption = DirectoryContentOption(index, options[index])
+            directory_content.add_option(directory_content_opt)
 
-        return picker
+        return SearchResult(None, directory_content)
         
     
     @staticmethod

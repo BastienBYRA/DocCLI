@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import json
 
 from pandas import DataFrame
 
@@ -7,3 +8,6 @@ from pandas import DataFrame
 class FileContent:
     filename: str = ""
     content: str | DataFrame = ""
+
+    def to_json(self):
+        return json.dumps(self.__dict__) 
