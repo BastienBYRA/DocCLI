@@ -1,11 +1,17 @@
 
+from typing import List
 from CLI.client import CLI
 from dotenv import find_dotenv, load_dotenv
 from typing_extensions import Annotated
+from shared.config import ApplicationConfig
+from shared.configs.base_config import BaseConfig
+from shared.enums.execution_mode import ExecutionMode
+from shared.models.directory_content import DirectoryContent
+from shared.models.search import Search
+from shared.models.search_result import SearchResult
+from shared.services.file_service import FileService
+from shared.validators.search_validator import SearchValidator
 import typer
-from shared.entrypoint import Entrypoint
-from shared.models.file_content import FileContent
-from shared.models.tree_picker import TreePicker
 
 app = typer.Typer()
 
@@ -14,15 +20,49 @@ def search(
     search_input: Annotated[str, typer.Argument()],
     exclude: Annotated[str, typer.Option(prompt_required=False, hidden=True, prompt="A list of regex to exclude files or directories in the form of 'regex1,regex2...'")] = ""
 ) -> None:
-    result: TreePicker | FileContent = Entrypoint.search(search_input, exclude)
+    
+    execution_mode: str = ApplicationConfig.get_execution_mode()
+    
+    # Check if the configuration is valid
+    # Should return an error if not
+    if execution_mode == ExecutionMode.CLIENT_SERVER:
+        ApplicationConfig.verify_client()
 
-    while isinstance(result, TreePicker):
-        result = CLI.choose_pick(result)
+        config: BaseConfig = ApplicationConfig.get_doccli_config()
+        search: Search = SearchValidator.validate(search_input, exclude)
+        
+        result: SearchResult
+        if FileService.is_folder(search.search_path):
+            result = FileService.tree_folder(search, config.base_dir)
+        else:
+            result = FileService.read_file(search.search_path)
 
-    if isinstance(result, FileContent):
-        print("-------------- START CONTENT --------------")
-        print(result.content)
-        print("--------------- END CONTENT ---------------")
+        if result.file_content is None:
+            while result.directory_content is not None:
+                result = CLI.choose_pick(result, search, config.base_dir)
+
+        result.print_file_content()
+
+
+    elif execution_mode == ExecutionMode.CLIENT:
+        ApplicationConfig.verify_server()
+        raise ValueError("TODO: CLIENT MODE")
+    else:
+        raise ValueError("Running as a mode is isn't supposed to.")
+    
+    
+
+    
+
+    # result: DirectoryContent | FileContent = Entrypoint.search(search_input, exclude)
+
+    # while isinstance(result, DirectoryContent):
+    #     result = CLI.choose_pick(result)
+
+    # if isinstance(result, FileContent):
+    #     print("-------------- START CONTENT --------------")
+    #     print(result.content)
+    #     print("--------------- END CONTENT ---------------")
     
     exit(0)
     
