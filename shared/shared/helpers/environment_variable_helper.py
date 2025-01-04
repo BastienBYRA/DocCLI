@@ -31,11 +31,12 @@ class EnvironmentVariableHelper:
         :return: True if the variable exists, False otherwise
         """
         is_valid: bool = False
+        # print(validator)
         # Compare `env_var` against a Enum
         if issubclass(validator, Enum):
             is_valid = value_in_enum(env_var, validator)
         # Check `env_var` is a Path
-        elif isinstance(validator, Path):
+        elif issubclass(validator, Path):
             is_valid = Path(env_var).exists()
         # elif isinstance(validator, int):
         #     is_valid = (int(env_var) == int(validator))

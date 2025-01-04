@@ -60,6 +60,6 @@ class ApplicationConfig:
         BaseValidator.validate_server()
         return
 
-    def verify_client():
+    def verify_client() -> None:
         BaseValidator.validate_client()
         return

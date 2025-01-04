@@ -10,4 +10,5 @@ class FileContent:
     content: str | DataFrame = ""
 
     def to_json(self):
-        return json.dumps(self.__dict__) 
+        # https://pythonprinciples.com/ask/how-do-you-json-serialize-a-class-in-python/
+        return json.dumps(self, default=lambda self: self.__dict__)
