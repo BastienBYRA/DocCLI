@@ -22,5 +22,4 @@ class DirectoryContent:
 
 
     def to_json(self):
-        # https://pythonprinciples.com/ask/how-do-you-json-serialize-a-class-in-python/
-        return json.dumps(self, default=lambda self: self.__dict__)
+        return json.loads(json.dumps(self, default=lambda self: self.__dict__))
