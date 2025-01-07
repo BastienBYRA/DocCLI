@@ -37,14 +37,16 @@ class SearchValidator:
         if not user_search_input:
             raise ValueError("The search is empty")
         
+
+        doccli_base_dir: Path = Path(os.getenv("DOCCLI_BASE_DIR"))
+        user_search_path: Path = Path(str(doccli_base_dir) + user_search_input)
+
         # Check the Path is valid
-        user_search_input_valid = Path(user_search_input).exists()
+        user_search_input_valid = user_search_path.exists()
         if user_search_input_valid is False:
             raise ValueError(f"{user_search_input} doesn't exist.")
         
         # Prevent user from doing a Directory traversal attack
-        doccli_base_dir: Path = Path(os.getenv("DOCCLI_BASE_DIR"))
-        user_search_path: Path = Path(str(doccli_base_dir) + user_search_input)
         if str(doccli_base_dir.resolve()) not in str(user_search_path.resolve()):
             raise ValueError(f"The search path {user_search_path.resolve()} is outside the base directory configured by the administrator.")
         

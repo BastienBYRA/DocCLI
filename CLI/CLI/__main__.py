@@ -26,7 +26,7 @@ def search(
     # Check if the configuration is valid
     # Should return an error if not
     if execution_mode == ExecutionMode.CLIENT_SERVER:
-        ApplicationConfig.verify_client()
+        ApplicationConfig.verify_client_server()
 
         config: BaseConfig = ApplicationConfig.get_doccli_config()
         search: Search = SearchValidator.validate(search_input, exclude)

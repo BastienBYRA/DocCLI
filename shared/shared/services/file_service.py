@@ -7,6 +7,7 @@ from pick import pick
 from pandas import DataFrame
 
 from shared.enums.file_type import FileType
+from shared.enums.search_response_type import SearchResponseType
 from shared.models.file_content import FileContent
 from shared.models.search import Search
 from shared.models.search_result import SearchResult
@@ -85,7 +86,7 @@ class FileService:
                 file_content = DefaultFileReader.read(search)
 
         file_content: FileContent = FileContent(search.name, file_content)
-        return SearchResult(file_content, None)
+        return SearchResult(SearchResponseType.FILE, file_content, None)
     
     
     def tree_folder(search: Search, base_dir_path: str) -> SearchResult:
@@ -123,7 +124,7 @@ class FileService:
             directory_content_opt: DirectoryContentOption = DirectoryContentOption(index, options[index])
             directory_content.add_option(directory_content_opt)
 
-        return SearchResult(None, directory_content)
+        return SearchResult(SearchResponseType.DIRECTORY, None, directory_content)
         
     
     @staticmethod

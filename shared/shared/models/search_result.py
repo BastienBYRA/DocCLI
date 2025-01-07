@@ -1,13 +1,14 @@
 from dataclasses import dataclass
-from pathlib import Path
+import json
 
+from shared.enums.search_response_type import SearchResponseType
 from shared.models.file_content import FileContent
 from shared.models.directory_content import DirectoryContent
 
 
 @dataclass
 class SearchResult:
-    # type: str = "TODO"
+    response_type: SearchResponseType | None
     file_content: FileContent | None
     directory_content: DirectoryContent | None
 
@@ -32,3 +33,6 @@ class SearchResult:
         print("-------------- START CONTENT --------------")
         print(self.file_content.content)
         print("--------------- END CONTENT ---------------")
+
+    def to_json(self):
+        return json.loads(json.dumps(self, default=lambda self: self.__dict__))
