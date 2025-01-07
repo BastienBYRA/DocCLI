@@ -1,6 +1,7 @@
 from typing import List
 from dotenv import find_dotenv, load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.encoders import jsonable_encoder
 from shared.config import ApplicationConfig
 from shared.models.search import Search
 from shared.models.search_result import SearchResult
@@ -12,26 +13,20 @@ app = FastAPI()
 
 ApplicationConfig.verify_server()
 config = ApplicationConfig.get_doccli_config()
-print("AA?")
 
-
-@app.get("/search/")
+@app.get("/search/", status_code=status.HTTP_200_OK)
 async def search(search_input: str = "/", exclude_list: str = ""):
-    print(search_input)
-    print(exclude_list)
     search: Search = SearchValidator.validate(search_input, exclude_list)
         
     result: SearchResult
     if FileService.is_folder(search.search_path):
         result = FileService.tree_folder(search, config.base_dir)
-        print(result)
-        print(result.directory_content)
-        return result.directory_content.to_json()
     else:
         result = FileService.read_file(search.search_path)
-        return result.file_content.to_json()
 
-@app.get("/health")
+    return jsonable_encoder(result)
+
+@app.get("/health/", status_code=status.HTTP_200_OK)
 async def health():
     return {"status": "200"}
 
