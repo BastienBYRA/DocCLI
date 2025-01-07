@@ -1,11 +1,14 @@
 
+import os
 from typing import List
 from CLI.client import CLI
 from dotenv import find_dotenv, load_dotenv
 from typing_extensions import Annotated
+from shared.commands.CLI.search import CLISearch
 from shared.config import ApplicationConfig
 from shared.configs.base_config import BaseConfig
 from shared.enums.execution_mode import ExecutionMode
+from shared.enums.search_response_type import SearchResponseType
 from shared.models.directory_content import DirectoryContent
 from shared.models.search import Search
 from shared.models.search_result import SearchResult
@@ -45,8 +48,27 @@ def search(
 
 
     elif execution_mode == ExecutionMode.CLIENT:
-        ApplicationConfig.verify_server()
-        raise ValueError("TODO: CLIENT MODE")
+
+        ApplicationConfig.verify_client()
+        # search: Search = SearchValidator.validate(search_input, exclude)
+        result: SearchResult = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), search_input, exclude)
+
+        # if result.response_type is not SearchResponseType.FILE:
+            # while result.response_type is SearchResponseType.DIRECTORY:
+            #     result = CLI.choose_pick(result, search, config.base_dir)
+
+        while result.response_type is SearchResponseType.DIRECTORY:
+            new_search_result: str = CLI.choose_pick_cli(result, search_input)
+            result = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), new_search_result, exclude)
+                
+        result.print_file_content()
+
+        # if result.file_content is None:
+        #     while result.directory_content is not None:
+        #         result = CLI.choose_pick(result, search, config.base_dir)
+
+        # result.print_file_content()
+        
     else:
         raise ValueError("Running as a mode is isn't supposed to.")
     

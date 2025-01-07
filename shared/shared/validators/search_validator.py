@@ -37,7 +37,6 @@ class SearchValidator:
         if not user_search_input:
             raise ValueError("The search is empty")
         
-
         doccli_base_dir: Path = Path(os.getenv("DOCCLI_BASE_DIR"))
         user_search_path: Path = Path(str(doccli_base_dir) + user_search_input)
 
