@@ -28,7 +28,7 @@ class CLI:
             exit(0)
         # If Go Back
         elif index == len(options) - 2 and can_go_back is True:
-            new_search = "/".join(search_input.rstrip("/").split("/")[:-1])
+            new_search = "/".join(search_input.split("/")[:-1])
             return new_search
         else:
             new_search = search_input + option

@@ -16,8 +16,10 @@ class CLISearch():
             if response.status_code != 200:
                 raise ValueError(f"The API didn't return a 200 HTTP Code; {response.status_code}, {response.content}")
 
-            search_result: SearchResult = json.loads(response.content, object_hook=SearchResult)
-
+            print(response.content)
+            search_result = json.loads(response.content)
+            print(search_result)
+            print("JE PASSE ICI")
             return search_result
         except Exception as e:
             raise ValueError(f"An error occured during the request to the API for the 'Search' command; {e}")

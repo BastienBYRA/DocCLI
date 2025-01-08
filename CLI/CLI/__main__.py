@@ -32,7 +32,7 @@ def search(
         ApplicationConfig.verify_client_server()
 
         config: BaseConfig = ApplicationConfig.get_doccli_config()
-        search: Search = SearchValidator.validate(search_input, exclude)
+        search: Search = SearchValidator.server_side_validator(search_input, exclude)
         
         result: SearchResult
         if FileService.is_folder(search.search_path):
@@ -50,7 +50,7 @@ def search(
     elif execution_mode == ExecutionMode.CLIENT:
 
         ApplicationConfig.verify_client()
-        # search: Search = SearchValidator.validate(search_input, exclude)
+        search: Search = SearchValidator.client_side_validator(search_input, exclude)
         result: SearchResult = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), search_input, exclude)
 
         # if result.response_type is not SearchResponseType.FILE:

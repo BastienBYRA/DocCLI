@@ -16,7 +16,7 @@ config = ApplicationConfig.get_doccli_config()
 
 @app.get("/search/", status_code=status.HTTP_200_OK)
 async def search(search_input: str = "/", exclude_list: str = ""):
-    search: Search = SearchValidator.validate(search_input, exclude_list)
+    search: Search = SearchValidator.server_side_validator(search_input, exclude_list)
         
     result: SearchResult
     if FileService.is_folder(search.search_path):
