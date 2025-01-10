@@ -89,8 +89,7 @@ class FileService:
         return SearchResult(SearchResponseType.FILE, file_content, None)
     
     
-    def tree_folder(search: Search, base_dir_path: str) -> SearchResult:
-        search_path: Path = search.search_path
+    def tree_folder(search_path: Path, base_dir_path: str) -> SearchResult:
 
         # Make sure the user don't go outside the base directory defined
         can_go_back = False

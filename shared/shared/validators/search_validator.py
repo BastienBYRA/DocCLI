@@ -46,7 +46,7 @@ class SearchValidator:
         # Check everything is OK with the exclusion list provided
         is_exclusion_list_empty: bool = SearchValidator.exclusion_list_is_empty(exclusion_list)
         if is_exclusion_list_empty is True:
-            exclusion_list = None
+            exclusion_list = ""
 
         is_exclusion_list_valid: bool = SearchValidator.exclusion_list_is_valid(user_search_input, exclusion_list)
         if is_exclusion_list_valid is False:
@@ -128,7 +128,7 @@ class SearchValidator:
     ##############################################
 
     @staticmethod
-    def server_side_validator(user_search_input: str, exclusion_list: str) -> bool:
+    def server_side_validator(user_search_input: str, exclusion_list: str) -> Search:
         """
         Validates the user-provided search input and exclusion list for server-side validation.
 
@@ -142,10 +142,11 @@ class SearchValidator:
         :return: True if all validations pass.
         :raises HTTPException: If any of the validations fail, with a corresponding error code and message.
         """
+        search: Search
         base_dir: str = os.getenv("DOCCLI_BASE_DIR")
 
         try:
-            SearchValidator.client_side_validator(user_search_input, exclusion_list)
+            search = SearchValidator.client_side_validator(user_search_input, exclusion_list)
         except Exception as e:
             raise HTTPException(status_code=404, detail=f"The Client-side validator failed; {e}")
         
@@ -160,7 +161,7 @@ class SearchValidator:
         if path_is_valid is False:
             raise HTTPException(status_code=404, detail=f"The search path {user_search_input} is outside the base directory configured by the administrator.")
 
-        return True
+        return search
 
 
     def path_exists(user_search_path: Path) -> bool:
@@ -186,6 +187,10 @@ class SearchValidator:
         :return: True if the path is within the base directory, False otherwise
         """
         # Prevent user from doing a Directory traversal attack
+        print("---------------------")
+        print(base_dir.resolve())
+        print(user_search_path.resolve())
+        print("---------------------")
         if str(base_dir.resolve()) not in str(user_search_path.resolve()):
             return False
         return True

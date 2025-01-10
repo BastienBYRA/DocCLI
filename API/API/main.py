@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI, status
@@ -17,12 +18,13 @@ config = ApplicationConfig.get_doccli_config()
 @app.get("/search/", status_code=status.HTTP_200_OK)
 async def search(search_input: str = "/", exclude_list: str = ""):
     search: Search = SearchValidator.server_side_validator(search_input, exclude_list)
-        
+    fullpath: Path = Path(config.base_dir + search_input)
+
     result: SearchResult
-    if FileService.is_folder(search.search_path):
-        result = FileService.tree_folder(search, config.base_dir)
+    if FileService.is_folder(fullpath):
+        result = FileService.tree_folder(fullpath, config.base_dir)
     else:
-        result = FileService.read_file(search.search_path)
+        result = FileService.read_file(fullpath)
 
     return jsonable_encoder(result)
 
