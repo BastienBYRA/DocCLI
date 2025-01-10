@@ -36,3 +36,11 @@ class SearchResult:
 
     def to_json(self):
         return json.loads(json.dumps(self, default=lambda self: self.__dict__))
+    
+    @staticmethod
+    def from_json(data: dict) -> 'SearchResult':
+        return SearchResult(
+            response_type=SearchResponseType(data.get('response_type')) if data.get('response_type') else None,
+            file_content=FileContent.from_json(data.get('file_content')) if data.get('file_content') else None,
+            directory_content=DirectoryContent.from_json(data.get('directory_content')) if data.get('directory_content') else None
+        )

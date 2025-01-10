@@ -28,7 +28,13 @@ class CLI:
             exit(0)
         # If Go Back
         elif index == len(options) - 2 and can_go_back is True:
-            new_search = "/".join(search_input.split("/")[:-1])
+            # Check last character is "/"
+            if search_input.endswith('/'):
+                # e.g => /this/is/my/path/ become /this/is/my/
+                new_search = search_input.rstrip('/').rsplit('/', 1)[0] + "/"
+            else:
+                # e.g => /this/is/my/path become /this/is/my/
+                new_search = search_input.rsplit('/', 1)[0] + "/"
             return new_search
         else:
             new_search = search_input + option

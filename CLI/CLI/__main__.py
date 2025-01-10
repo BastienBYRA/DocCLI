@@ -53,38 +53,14 @@ def search(
         search: Search = SearchValidator.client_side_validator(search_input, exclude)
         result: SearchResult = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), search_input, exclude)
 
-        # if result.response_type is not SearchResponseType.FILE:
-            # while result.response_type is SearchResponseType.DIRECTORY:
-            #     result = CLI.choose_pick(result, search, config.base_dir)
-
-        while result.response_type is SearchResponseType.DIRECTORY:
-            new_search_result: str = CLI.choose_pick_cli(result, search_input)
-            result = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), new_search_result, exclude)
+        while result.response_type == SearchResponseType.DIRECTORY:
+            search_input = CLI.choose_pick_cli(result, search_input)
+            result = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), search_input, exclude)
                 
         result.print_file_content()
-
-        # if result.file_content is None:
-        #     while result.directory_content is not None:
-        #         result = CLI.choose_pick(result, search, config.base_dir)
-
-        # result.print_file_content()
         
     else:
         raise ValueError("Running as a mode is isn't supposed to.")
-    
-    
-
-    
-
-    # result: DirectoryContent | FileContent = Entrypoint.search(search_input, exclude)
-
-    # while isinstance(result, DirectoryContent):
-    #     result = CLI.choose_pick(result)
-
-    # if isinstance(result, FileContent):
-    #     print("-------------- START CONTENT --------------")
-    #     print(result.content)
-    #     print("--------------- END CONTENT ---------------")
     
     exit(0)
     

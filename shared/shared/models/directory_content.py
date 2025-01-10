@@ -23,3 +23,11 @@ class DirectoryContent:
 
     def to_json(self):
         return json.loads(json.dumps(self, default=lambda self: self.__dict__))
+    
+    @staticmethod
+    def from_json(data: dict) -> 'DirectoryContent':
+        return DirectoryContent(
+            options=[DirectoryContentOption.from_json(option) for option in data.get('options', [])],
+            title=data.get('title', ''),
+            can_go_back=data.get('can_go_back', False)
+        )
