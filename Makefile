@@ -20,3 +20,12 @@ run-update-api:
 	@echo "Running Backend application..."
 	cd API && uv add ../shared --reinstall && uv run -- fastapi dev API/main.py
 
+# Cible pour exécuter l'application CLI
+update-cli:
+	@echo "Running CLI application..."
+	cd CLI && uv add ../shared --reinstall
+
+# Cible pour exécuter l'application backend
+update-api:
+	@echo "Running Backend application..."
+	cd API && uv add ../shared --reinstall

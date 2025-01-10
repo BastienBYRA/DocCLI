@@ -1,4 +1,6 @@
 import os
+import validators
+
 from pathlib import Path
 from shared.enums.execution_mode import ExecutionMode
 from shared.enums.source_type import SourceType
@@ -95,5 +97,30 @@ class BaseValidator:
         doccli_base_dir_valid = EnvironmentVariableHelper.variable_valid(doccli_base_dir, Path)
         if doccli_base_dir_valid is False:
             raise ValueError("The directory DOCCLI_BASE_DIR defined is incorrect.")
+
+        return True
+    
+    def validate_doccli_endpoint() -> bool:
+        """
+        Validates the environment variable 'DOCCLI_ENDPOINT' to ensure it meets the expected criteria.
+        
+        This function performs the following checks:
+        1. Verifies that the environment variable 'DOCCLI_ENDPOINT' is defined.
+        2. Validates that the value of 'DOCCLI_ENDPOINT' is a valid URL.
+
+        :return: True if all checks pass.
+        :raises ValueError: If the variable is not defined or its value is invalid (e.g., the path is incorrect).
+        """
+
+        # Check DOCCLI_ENDPOINT is defined
+        doccli_endpoint_exist: bool = EnvironmentVariableHelper.variable_exists("DOCCLI_ENDPOINT")
+        if doccli_endpoint_exist is False:
+            raise ValueError("DOCCLI_ENDPOINT is not defined.")
+        
+        # Check the value is valid
+        doccli_endpoint = os.getenv("DOCCLI_ENDPOINT")
+        doccli_endpoint_valid = validators.url(doccli_endpoint)
+        if doccli_endpoint_valid is False:
+            raise ValueError("The DOCCLI_ENDPOINT URL defined is not a valid URL.")
 
         return True

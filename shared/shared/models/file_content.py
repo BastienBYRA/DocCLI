@@ -11,3 +11,10 @@ class FileContent:
 
     def to_json(self):
         return json.loads(json.dumps(self, default=lambda self: self.__dict__))
+    
+    @staticmethod
+    def from_json(data: dict) -> 'FileContent':
+        return FileContent(
+            filename=data.get('filename', ''),
+            content=data.get('content', '')
+        )

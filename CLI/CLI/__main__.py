@@ -1,11 +1,14 @@
 
+import os
 from typing import List
 from CLI.client import CLI
 from dotenv import find_dotenv, load_dotenv
 from typing_extensions import Annotated
+from shared.commands.CLI.search import CLISearch
 from shared.config import ApplicationConfig
 from shared.configs.base_config import BaseConfig
 from shared.enums.execution_mode import ExecutionMode
+from shared.enums.search_response_type import SearchResponseType
 from shared.models.directory_content import DirectoryContent
 from shared.models.search import Search
 from shared.models.search_result import SearchResult
@@ -29,7 +32,7 @@ def search(
         ApplicationConfig.verify_client_server()
 
         config: BaseConfig = ApplicationConfig.get_doccli_config()
-        search: Search = SearchValidator.validate(search_input, exclude)
+        search: Search = SearchValidator.server_side_validator(search_input, exclude)
         
         result: SearchResult
         if FileService.is_folder(search.search_path):
@@ -45,24 +48,19 @@ def search(
 
 
     elif execution_mode == ExecutionMode.CLIENT:
-        ApplicationConfig.verify_server()
-        raise ValueError("TODO: CLIENT MODE")
+
+        ApplicationConfig.verify_client()
+        search: Search = SearchValidator.client_side_validator(search_input, exclude)
+        result: SearchResult = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), search_input, exclude)
+
+        while result.response_type == SearchResponseType.DIRECTORY:
+            search_input = CLI.choose_pick_cli(result, search_input)
+            result = CLISearch.run(os.getenv("DOCCLI_ENDPOINT"), search_input, exclude)
+                
+        result.print_file_content()
+        
     else:
         raise ValueError("Running as a mode is isn't supposed to.")
-    
-    
-
-    
-
-    # result: DirectoryContent | FileContent = Entrypoint.search(search_input, exclude)
-
-    # while isinstance(result, DirectoryContent):
-    #     result = CLI.choose_pick(result)
-
-    # if isinstance(result, FileContent):
-    #     print("-------------- START CONTENT --------------")
-    #     print(result.content)
-    #     print("--------------- END CONTENT ---------------")
     
     exit(0)
     
