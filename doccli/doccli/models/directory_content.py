@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 import json
 from typing import List
-from shared.models.directory_content_option import DirectoryContentOption
+from doccli.models.directory_content_option import DirectoryContentOption
 
 @dataclass
 class DirectoryContent:

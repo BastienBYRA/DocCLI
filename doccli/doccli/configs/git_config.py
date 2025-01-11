@@ -2,8 +2,8 @@ import os
 from typing import Optional, Self, cast, override
 from pydantic import Field, field_validator, model_validator
 
-from shared.configs.base_config import BaseConfig
-from shared.enums.source_type import SourceType
+from doccli.configs.base_config import BaseConfig
+from doccli.enums.source_type import SourceType
 
 class GitConfig(BaseConfig):
     source: SourceType = Field(SourceType.GIT, frozen=True)

@@ -1,12 +1,12 @@
 import os
 
-from shared.configs.base_config import BaseConfig
-from shared.configs.git_config import GitConfig
-from shared.configs.os_config import OsConfig
-from shared.enums.execution_mode import ExecutionMode
-from shared.enums.source_type import SourceType
-from shared.services.git_service import GitService
-from shared.validators.base_validator import BaseValidator
+from doccli.configs.base_config import BaseConfig
+from doccli.configs.git_config import GitConfig
+from doccli.configs.os_config import OsConfig
+from doccli.enums.execution_mode import ExecutionMode
+from doccli.enums.source_type import SourceType
+from doccli.services.git_service import GitService
+from doccli.validators.base_validator import BaseValidator
 
 
 class ApplicationConfig:

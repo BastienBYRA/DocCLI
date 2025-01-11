@@ -2,14 +2,14 @@ import os
 import validators
 
 from pathlib import Path
-from shared.enums.execution_mode import ExecutionMode
-from shared.enums.source_type import SourceType
-from shared.helpers.environment_variable_helper import EnvironmentVariableHelper
+from doccli.enums.execution_mode import ExecutionMode
+from doccli.enums.source_type import SourceType
+from doccli.helpers.environment_variable_helper import EnvironmentVariableHelper
 
 
 class BaseValidator:
     """
-    A base class for validating shared / common components across the program.
+    A base class for validating doccli / common components across the program.
     """
 
     @staticmethod

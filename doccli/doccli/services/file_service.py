@@ -6,17 +6,17 @@ from pick import pick
 
 from pandas import DataFrame
 
-from shared.enums.file_type import FileType
-from shared.enums.search_response_type import SearchResponseType
-from shared.models.file_content import FileContent
-from shared.models.search import Search
-from shared.models.search_result import SearchResult
-from shared.services.file_readers.default_file_reader import DefaultFileReader
-from shared.services.file_readers.excel_file_reader import ExcelFileReader
-from shared.services.file_readers.pdf_file_reader import PdfFileReader
-from shared.configs.base_config import BaseConfig
-from shared.models.directory_content_option import DirectoryContentOption
-from shared.models.directory_content import DirectoryContent
+from doccli.enums.file_type import FileType
+from doccli.enums.search_response_type import SearchResponseType
+from doccli.models.file_content import FileContent
+from doccli.models.search import Search
+from doccli.models.search_result import SearchResult
+from doccli.services.file_readers.default_file_reader import DefaultFileReader
+from doccli.services.file_readers.excel_file_reader import ExcelFileReader
+from doccli.services.file_readers.pdf_file_reader import PdfFileReader
+from doccli.configs.base_config import BaseConfig
+from doccli.models.directory_content_option import DirectoryContentOption
+from doccli.models.directory_content import DirectoryContent
 
 class FileService:
     """Classe utilitaire pour gérer des fichiers. Contient uniquement des méthodes statiques."""

@@ -2,7 +2,7 @@ import os
 from typing import Self, cast
 from pydantic import BaseModel, Field, field_validator
 
-from shared.enums.source_type import SourceType
+from doccli.enums.source_type import SourceType
 
 class BaseConfig(BaseModel):
     """

@@ -1,6 +1,7 @@
 .vscode
 .mypy_cache
 .venv
+.idea
 
 __pycache__
 .env
@@ -12,3 +13,4 @@ dist
 HIDE.md
 
 temp.py
+TEST_NOT_PUSH

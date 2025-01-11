@@ -6,7 +6,7 @@ from typing import List
 from fastapi import HTTPException
 
 from loguru import logger
-from shared.models.search import Search
+from doccli.models.search import Search
 
 class SearchValidator:
     """
@@ -187,10 +187,6 @@ class SearchValidator:
         :return: True if the path is within the base directory, False otherwise
         """
         # Prevent user from doing a Directory traversal attack
-        print("---------------------")
-        print(base_dir.resolve())
-        print(user_search_path.resolve())
-        print("---------------------")
         if str(base_dir.resolve()) not in str(user_search_path.resolve()):
             return False
         return True

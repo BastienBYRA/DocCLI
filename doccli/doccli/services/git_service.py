@@ -1,4 +1,4 @@
-from shared.configs.git_config import GitConfig
+from doccli.configs.git_config import GitConfig
 from git import Repo, GitCommandError
 from pydantic import BaseModel
 

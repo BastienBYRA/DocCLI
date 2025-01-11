@@ -1,8 +1,8 @@
 import os
 from typing import Self, cast, override
 from pydantic import Field
-from shared.configs.base_config import BaseConfig
-from shared.enums.source_type import SourceType
+from doccli.configs.base_config import BaseConfig
+from doccli.enums.source_type import SourceType
 
 
 class OsConfig(BaseConfig):

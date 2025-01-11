@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 import json
 
-from shared.enums.search_response_type import SearchResponseType
-from shared.models.file_content import FileContent
-from shared.models.directory_content import DirectoryContent
+from doccli.enums.search_response_type import SearchResponseType
+from doccli.models.file_content import FileContent
+from doccli.models.directory_content import DirectoryContent
 
 
 @dataclass

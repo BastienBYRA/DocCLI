@@ -2,7 +2,7 @@ from enum import Enum
 import os
 from pathlib import Path
 
-from shared.helpers.enum_helper import value_in_enum
+from doccli.helpers.enum_helper import value_in_enum
 
 class EnvironmentVariableHelper:
     """

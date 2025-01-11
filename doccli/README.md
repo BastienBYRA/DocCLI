@@ -1,6 +1,6 @@
-# Shared
+# doccli
 
-Shared is a folder that contains code that can/will use in the different module of the project (CLI, backend...)
+doccli is a folder that contains code that can/will use in the different module of the project (CLI, backend...)
 
 ## How to build it
 
