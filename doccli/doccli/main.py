@@ -22,6 +22,4 @@ def start_app() -> None:
 
 if __name__ == "__main__":
     load_dotenv(find_dotenv(), verbose=True)
-    print(os.getenv("DOCCLI_MODE"))
-    print("HEY")
     start_app()
