@@ -1,4 +1,5 @@
 import os
+from doccli.entrypoints.clientserver import EntrypointClientServer
 from dotenv import find_dotenv, load_dotenv
 
 from doccli.config import ApplicationConfig
@@ -10,7 +11,7 @@ def start_app() -> None:
     execution_mode: str = ApplicationConfig.get_execution_mode()
 
     if execution_mode == ExecutionMode.CLIENT_SERVER:
-        exit(1)
+        EntrypointClientServer.run()
     elif execution_mode == ExecutionMode.CLIENT:
         EntrypointClient.run()
     elif execution_mode == ExecutionMode.SERVER:
