@@ -42,8 +42,10 @@ jobs:
       - name: Rename Windows Binary
         if: runner.os == 'Windows'
         run: |
+          if (Test-Path artifacts) { Remove-Item -Recurse -Force artifacts }
           mkdir artifacts
           move dist\main.exe artifacts\main-windows.exe
+        shell: pwsh
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
