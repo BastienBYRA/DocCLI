@@ -3,7 +3,7 @@ name: Release Build
 on:
   push:
     branches:
-      - build/init-github-action
+      - release
 
 permissions:
   contents: write

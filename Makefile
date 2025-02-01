@@ -18,16 +18,16 @@ endif
 .PHONY: run-client-server rcs
 run-client-server rcs: ## Run the application in CLIENT-SERVER mode
 ifdef PLATFORM
-	cd doccli && DOCCLI_MODE=client DOCCLI_SOURCE=os DOCCLI_BASE_DIR=/ uv run doccli/main.py search /
+	cd doccli && DOCCLI_MODE=client-server DOCCLI_SOURCE=os DOCCLI_BASE_DIR=/ uv run doccli/main.py search /
 else
-	SET "DOCCLI_MODE=client" && SET "DOCCLI_SOURCE=os" && SET "DOCCLI_BASE_DIR=C:/" && cd doccli && uv run doccli\main.py search /
+	SET "DOCCLI_MODE=client-server" && SET "DOCCLI_SOURCE=os" && SET "DOCCLI_BASE_DIR=C:/" && cd doccli && uv run doccli\main.py search /
 endif
 
 
 .PHONY: run-api ra
 run-api ra: ## Run the application in SERVER mode
 ifdef PLATFORM
-	cd doccli && DOCCLI_MODE=client DOCCLI_SOURCE=os DOCCLI_BASE_DIR=/ uv run doccli/main.py
+	cd doccli && DOCCLI_MODE=server DOCCLI_SOURCE=os DOCCLI_BASE_DIR=/ uv run doccli/main.py
 else
-	SET "DOCCLI_MODE=client" && SET "DOCCLI_SOURCE=os" && SET "DOCCLI_BASE_DIR=C:/" && cd doccli && uv run doccli\main.py
+	SET "DOCCLI_MODE=server" && SET "DOCCLI_SOURCE=os" && SET "DOCCLI_BASE_DIR=C:/" && cd doccli && uv run doccli\main.py
 endif
