@@ -30,8 +30,7 @@ jobs:
 
       - name: Build Binary
         run: |
-          pyinstaller --onefile main.py
-        # Remplace `main.py` par ton fichier principal
+          pyinstaller --onefile ./doccli/doccli/main.py
 
       - name: Rename Binaries
         run: |
