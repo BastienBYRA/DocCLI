@@ -40,6 +40,7 @@ jobs:
 
       - name: Rename Binaries
         run: |
+          cd doccli
           mkdir artifacts
           if [[ "$RUNNER_OS" == "Linux" ]]; then mv dist/main artifacts/main-linux; fi
           if [[ "$RUNNER_OS" == "macOS" ]]; then mv dist/main artifacts/main-macos; fi
@@ -48,6 +49,7 @@ jobs:
       - name: Rename Windows Binary
         if: runner.os == 'Windows'
         run: |
+          cd doccli
           if (Test-Path artifacts) { Remove-Item -Recurse -Force artifacts }
           mkdir artifacts
           move dist\main.exe artifacts\main-windows.exe
