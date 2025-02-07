@@ -34,17 +34,17 @@ jobs:
         run: |
           cd doccli
           uv sync
-          uv pip install pyinstaller
+          uv add pyinstaller
 
-      - name: Check Installed Dependencies
-        run: |
-          cd doccli
-          uv pip list
+      # - name: Check Installed Dependencies
+      #   run: |
+      #     cd doccli
+      #     uv pip list
 
       - name: Build Binary
         run: |
           cd doccli
-          pyinstaller --onefile ./doccli/main.py
+          uv run -- pyinstaller --onefile ./doccli/main.py
 
       - name: Rename Binaries
         run: |
