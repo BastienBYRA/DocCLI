@@ -43,7 +43,8 @@ class EntrypointClient():
     @staticmethod
     @app.command()
     def version() -> None:
-        print("0.0.0")
+        print("DocCLI; https://github.com/BastienBYRA/DocCLI")
+        print("0.1.0")
 
 # if __name__ == "__main__":
 #     ClientSetup.app()
